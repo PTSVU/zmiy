@@ -106,8 +106,18 @@ impl Game {
     }
 
     fn spawn_food(&mut self) {
-        use rand::Rng;
-        let mut rng = rand::rng();
+        use rand::{Rng, SeedableRng};
+        use std::time::{SystemTime, UNIX_EPOCH};
+
+        // Используем системное время как источник энтропии для сида
+        let seed = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Ошибка получения времени")
+            .as_nanos() as u64;
+
+        // Создаем генератор с уникальным сидом
+        let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
+
         loop {
             let x = rng.random_range(0..self.width);
             let y = rng.random_range(0..self.height);
